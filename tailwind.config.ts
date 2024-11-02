@@ -11,6 +11,8 @@ const config: Config = {
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
+        creme: "#FFF5EA",
+        carcoal: "#494F55"
       },
     },
   },
