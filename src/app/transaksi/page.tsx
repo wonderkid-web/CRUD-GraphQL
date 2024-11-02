@@ -1,9 +1,16 @@
-import React from 'react'
+import FormTransaction from "@/components/FormTransaction";
+import HeaderContainer from "@/components/HeaderContainer";
+import MainContainer from "@/components/MainContainer";
+import React from "react";
 
-function page() {
+
+const page = () => {
   return (
-    <div>page</div>
-  )
-}
+    <MainContainer>
+      <HeaderContainer pageName="Transaksi" />
+      <FormTransaction />
+    </MainContainer>
+  );
+};
 
-export default page
+export default page;

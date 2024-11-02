@@ -1,8 +1,12 @@
+import HeaderContainer from "@/components/HeaderContainer"
+import MainContainer from "@/components/MainContainer"
 
 
 function Page({}) {
   return (
-    <div>Page</div>
+    <MainContainer>
+      <HeaderContainer pageName="Beranda" />
+    </MainContainer>
   )
 }
 

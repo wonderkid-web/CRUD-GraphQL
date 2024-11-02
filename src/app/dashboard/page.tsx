@@ -1,7 +1,7 @@
 import DashboardCard from "@/components/DashboardCard";
 import { Calculator } from "lucide-react";
-import Image from "next/image";
-import logo from "../../../public/logo.jpeg";
+import MainContainer from "@/components/MainContainer";
+import HeaderContainer from "@/components/HeaderContainer";
 
 const DashboardData = [
   {
@@ -28,16 +28,9 @@ const DashboardData = [
 
 function page() {
   return (
-    <div className="h-full max-h-full p-4 container space-y-4">
-      <div className="flex justify-between items-center">
-        <h1 className="text-carcoal text-2xl col-span-full ml-2 font-bold">
-          Dashboard
-        </h1>
-        <div className="size-12 relative overflow-hidden rounded-full border border-carcoal">
-          <Image src={logo} alt="logo" objectFit="cover" fill />
-        </div>
-      </div>
-      <div className="grid grid-cols-2 justify-items-center gap-3">
+    <MainContainer>
+      <HeaderContainer pageName="Dashboard" />
+      <section className="grid grid-cols-2 justify-items-center gap-4">
         {DashboardData.map((card) => (
           <DashboardCard key={card.information} {...card} />
         ))}
@@ -55,8 +48,8 @@ function page() {
             </div>
           </div>
         </div>
-      </div>
-    </div>
+      </section>
+    </MainContainer>
   );
 }
 
