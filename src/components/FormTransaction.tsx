@@ -71,6 +71,7 @@ function FormTransaction() {
         onSubmit={form.handleSubmit(onSubmit)}
         className="grid grid-cols-1 text-carcoal gap-4"
       >
+        
         <FormField
           control={form.control}
           name="keterangan"

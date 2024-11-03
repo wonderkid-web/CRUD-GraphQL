@@ -1,1 +1,1 @@
-export type PageNameType = "Dashboard" | "Beranda" | "Transaksi"
+export type PageNameType = "Dashboard" | "Beranda" | "Transaksi" 

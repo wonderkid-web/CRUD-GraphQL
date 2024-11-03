@@ -19,7 +19,7 @@ function page() {
                 <ArrowBigUpDash strokeWidth={1} color="red" />
               )}
               {card % 2 == 1 && (
-                <ArrowBigDownDash strokeWidth={1} color="green" />
+                <ArrowBigDownDash strokeWidth={1} color="" />
               )}
             </div>
             <div className="flex justify-between items-center">
