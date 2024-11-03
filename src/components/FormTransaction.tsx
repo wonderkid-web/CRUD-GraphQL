@@ -25,6 +25,7 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { toast } from "sonner";
+import { ArrowDownToDot } from "lucide-react";
 
 const FormSchema = z.object({
   keterangan: z.string().min(5, {
@@ -52,6 +53,8 @@ function FormTransaction() {
     const sleep = async (time: number) =>
       new Promise((res) => setTimeout(res, time));
 
+    const created_at = new Date()
+
     const toastId = toast.loading("Memproses Transaksi");
 
     await sleep(800);
@@ -59,7 +62,7 @@ function FormTransaction() {
     toast.dismiss(toastId);
 
     toast.success("Berhasil Melakukan Transaksi");
-    console.log(values)
+    console.log({...values, created_at})
   };
 
   return (
@@ -108,16 +111,17 @@ function FormTransaction() {
           control={form.control}
           name="type"
           render={({ field }) => (
-            <FormItem className="flex gap-2 flex-col mt-2">
+            <FormItem className="flex flex-col mt-2">
               <FormLabel>Pilih Type Transaksi</FormLabel>
               <FormControl>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="outline" className="text-start">
+                    <Button variant="outline" className="shadow-none border-carcoal h-12 justify-between">
                       {`Transaksi ${field.value}` || "Pilih Jenis Transaksi"}
+                      <ArrowDownToDot strokeWidth={1} color="#494F55" />
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent className="w-56">
+                  <DropdownMenuContent className="w-[92vw] md:max-w-sm text-carcoal self-start">
                     <DropdownMenuLabel>Jenis Transaksi</DropdownMenuLabel>
                     <DropdownMenuSeparator />
                     <DropdownMenuRadioGroup
