@@ -3,11 +3,6 @@ import { NextResponse } from "next/server";
 
 export default auth(({ auth }) => {
   if (!auth) return NextResponse.redirect(`${process.env.AUTH_URL}/api/auth/signin`);
-  // if (
-    // clientPath.includes(nextUrl.pathname) &&
-    // auth.user.email.includes("admin")
-  // )
-    // return NextResponse.redirect(`${process.env.AUTH_URL}/admin`);
 });
 
 
