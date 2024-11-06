@@ -34,7 +34,7 @@ const FormSchema = z.object({
   nominal: z.string({
     message: "Minimal Pengeluaran Rp.500",
   }),
-  type: z.enum(["jumat", "infaq", "nazir"], {
+  type: z.enum(["KHATIB", "INFAQ", "NAZIR", "DANA_MASUK"], {
     message: "Wajib memilih jenis Transaksi",
   }),
 });
@@ -45,7 +45,7 @@ function FormTransaction() {
     defaultValues: {
       keterangan: "",
       nominal: "",
-      type: "infaq",
+      type: "DANA_MASUK",
     },
   });
 
@@ -53,7 +53,7 @@ function FormTransaction() {
     const sleep = async (time: number) =>
       new Promise((res) => setTimeout(res, time));
 
-    const created_at = new Date()
+    const created_at = new Date();
 
     const toastId = toast.loading("Memproses Transaksi");
 
@@ -62,7 +62,11 @@ function FormTransaction() {
     toast.dismiss(toastId);
 
     toast.success("Berhasil Melakukan Transaksi");
-    console.log({...values, created_at})
+    console.log({
+      ...values,
+      created_at,
+      nominal: values.nominal.replace(".", ""),
+    });
   };
 
   return (
@@ -71,7 +75,6 @@ function FormTransaction() {
         onSubmit={form.handleSubmit(onSubmit)}
         className="grid grid-cols-1 text-carcoal gap-4"
       >
-        
         <FormField
           control={form.control}
           name="keterangan"
@@ -94,11 +97,30 @@ function FormTransaction() {
             <FormItem>
               <FormLabel>Nominal Transaksi</FormLabel>
               <FormControl>
-                <Input
-                  type="number"
-                  placeholder="Nominal Transaksi"
-                  {...field}
-                />
+                <div className="relative">
+                  <Input
+                    type="string"
+                    className="pl-10"
+                    placeholder="Nominal Transaksi"
+                    {...field}
+                    onChange={(e) => {
+                      const currValue = e.currentTarget.value.replace(/\D/g, ""); // Remove non-numeric characters
+                      let formattedValue = "";
+
+                      for (let i = 0; i < currValue.length; i++) {
+                        if (i > 0 && (currValue.length - i) % 3 === 0) {
+                          formattedValue += ".";
+                        }
+                        formattedValue += currValue[i];
+                      }
+
+                      field.onChange(formattedValue);
+                    }}
+                  />
+                  <p className="absolute left-3 top-[.77rem] text-carcoal text-sm">
+                    Rp.{" "}
+                  </p>
+                </div>
               </FormControl>
               <FormDescription>
                 Nominal Transaksi minimal Rp. 500.
@@ -117,13 +139,26 @@ function FormTransaction() {
               <FormControl>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="outline" className="shadow-none border-carcoal h-12 justify-between">
+                    <Button
+                      variant="outline"
+                      className="shadow-none border-carcoal h-12 justify-between"
+                    >
                       {`Transaksi ${field.value}` || "Pilih Jenis Transaksi"}
                       <ArrowDownToDot strokeWidth={1} color="#494F55" />
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent className="w-[92vw] md:max-w-sm text-carcoal self-start">
-                    <DropdownMenuLabel>Jenis Transaksi</DropdownMenuLabel>
+                    <DropdownMenuLabel>Transaksi Masuk</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuRadioGroup
+                      value={field.value}
+                      onValueChange={field.onChange}
+                    >
+                      <DropdownMenuRadioItem value="dana_masuk">
+                        Dana Masuk
+                      </DropdownMenuRadioItem>
+                    </DropdownMenuRadioGroup>
+                    <DropdownMenuLabel>Transaksi Keluar</DropdownMenuLabel>
                     <DropdownMenuSeparator />
                     <DropdownMenuRadioGroup
                       value={field.value}

@@ -3,7 +3,6 @@ import HeaderContainer from "@/components/HeaderContainer";
 import MainContainer from "@/components/MainContainer";
 import React from "react";
 
-
 const page = () => {
   return (
     <MainContainer>

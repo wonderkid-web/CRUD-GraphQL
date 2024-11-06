@@ -1,4 +1,7 @@
 // Next.js Custom Route Handler: https://nextjs.org/docs/app/building-your-application/routing/router-handlers
+import { transactionCollection } from "@/libs/firebase";
+import { FormTransaksiType } from "@/types";
+import { doc, getDoc, getDocs } from "firebase/firestore";
 import { createSchema, createYoga } from "graphql-yoga";
 
 type User = {
@@ -28,20 +31,54 @@ const users = [
 const { handleRequest }: { handleRequest: any } = createYoga({
   schema: createSchema({
     typeDefs: /* GraphQL */ `
+      enum TipeTransaksiType {
+        INFAQ
+        JUMAT
+        NAZIR
+        DANA_MASUK
+      }
+
+      type FirebaseTimeType {
+        nanoseconds: Int!
+        seconds: Int!
+      }
+
       type User {
         name: String!
         age: Int!
       }
 
+      type Transaction {
+        keterangan: String!
+        nominal: Int!
+        type: TipeTransaksiType!
+        created_at: FirebaseTimeType!
+        id: String!
+      }
+
       type Query {
         users: [User]
         user(age: Int!): User
+        transactions: [Transaction]
+        transaction(id: String!): Transaction
       }
     `,
     resolvers: {
       Query: {
         users: (): User[] => users,
         user: (_, { age }) => users.find((user) => user.age == age),
+        transactions: async (): Promise<FormTransaksiType[]> => {
+          const rawTransaction = await getDocs(transactionCollection);
+          return rawTransaction.docs.map(
+            (doc) => ({ ...doc.data(), id: doc.id } as FormTransaksiType)
+          );
+        },
+        transaction: async (_, { id }) => {
+          const docRef = doc(transactionCollection, id);
+          const transaction = await getDoc(docRef);
+
+          return transaction;
+        },
       },
     },
   }),
