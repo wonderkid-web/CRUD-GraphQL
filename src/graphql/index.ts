@@ -17,3 +17,12 @@ export const GET_TRANSACTIONS : TypedDocumentNode<TransactionsGraphType> = gql`
         }
     }
 `
+
+export const DELETE_TRANSACTION = gql`
+    mutation DeleteTransaction($id: String!){
+        deleteTransaction(id: $id){
+            success
+            description
+        }
+    }
+`

@@ -1,7 +1,7 @@
 // Next.js Custom Route Handler: https://nextjs.org/docs/app/building-your-application/routing/router-handlers
 import { transactionCollection } from "@/libs/firebase";
 import { FormTransaksiType } from "@/types";
-import { doc, getDoc, getDocs } from "firebase/firestore";
+import { deleteDoc, doc, getDoc, getDocs } from "firebase/firestore";
 import { createSchema, createYoga } from "graphql-yoga";
 
 type User = {
@@ -56,13 +56,23 @@ const { handleRequest }: { handleRequest: any } = createYoga({
         id: String!
       }
 
+      type ResponseDelete {
+        success: Boolean!
+        description: String!
+      }
+
       type Query {
         users: [User]
         user(age: Int!): User
         transactions: [Transaction]
         transaction(id: String!): Transaction
       }
+
+      type Mutation {
+        deleteTransaction(id: String!): ResponseDelete
+      }
     `,
+
     resolvers: {
       Query: {
         users: (): User[] => users,
@@ -78,6 +88,24 @@ const { handleRequest }: { handleRequest: any } = createYoga({
           const transaction = await getDoc(docRef);
 
           return transaction;
+        },
+      },
+      Mutation: {
+        deleteTransaction: async (_, { id }) => {
+          const docRef = doc(transactionCollection, id);
+          try {
+            await deleteDoc(docRef);
+
+            return {
+              success: true,
+              description: "Dokumen Berhasil dihapus",
+            };
+          } catch (error) {
+            return {
+              success: false,
+              description: `Dokumen gagal dihapus: ${error}`,
+            };
+          }
         },
       },
     },

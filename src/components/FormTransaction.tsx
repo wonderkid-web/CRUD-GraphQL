@@ -104,7 +104,7 @@ function FormTransaction() {
                     placeholder="Nominal Transaksi"
                     {...field}
                     onChange={(e) => {
-                      const currValue = e.currentTarget.value.replace(/\D/g, ""); // Remove non-numeric characters
+                      const  currValue = e.currentTarget.value.replace(/\D/g, ""); // Remove non-numeric characters
                       let formattedValue = "";
 
                       for (let i = 0; i < currValue.length; i++) {
