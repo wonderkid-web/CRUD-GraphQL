@@ -25,7 +25,7 @@ function Page() {
   return (
     <MainContainer>
       <HeaderContainer pageName="Dashboard" />
-      <section className="grid grid-cols-2 justify-items-center gap-4">
+      <section className="grid grid-cols-1 sm:grid-cols-2 justify-items-center gap-4">
         {/* {DashboardData.map((card) => (
           <DashboardCard key={card.information} {...card} />
         ))} */}
@@ -78,7 +78,7 @@ function Page() {
           </div>
           <div className="flex gap-1 items-center">
             <Calculator strokeWidth={1} color="#494F55" />
-            <p className="text-md w-fit">Total Khatib</p>
+            <p className="text-xl w-fit">Total Khatib</p>
           </div>
         </div>
 
