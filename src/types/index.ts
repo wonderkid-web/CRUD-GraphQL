@@ -11,7 +11,7 @@ export interface FormTransaksiType {
   keterangan: string;
   nominal: number;
   type: TipeTransaksiType;
-  created_at: FirebaseTimeType;
+  created_at: FirebaseTimeType | Date;
   id: string;
 }
 

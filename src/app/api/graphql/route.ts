@@ -42,6 +42,7 @@ const { handleRequest }: { handleRequest: any } = createYoga({
         seconds: Int!
       }
 
+
       type User {
         name: String!
         age: Int!

@@ -9,10 +9,11 @@ import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { toast } from "sonner";
 import Image from "next/image";
 import empty from "../../public/undraw_no_data_re_kwbl.svg";
+import { formatDate } from "@/helper";
 
 function Transaction() {
-  const { data, loading, error, refetch } = useQuery(GET_TRANSACTIONS,{
-    fetchPolicy: "cache-and-network"
+  const { data, loading, error, refetch } = useQuery(GET_TRANSACTIONS, {
+    fetchPolicy: "cache-and-network",
   });
   const [deleteFunction, { loading: loadingDelete, error: errorDelete }] =
     useMutation(DELETE_TRANSACTION);
@@ -80,25 +81,39 @@ function Transaction() {
           </div>
           <div className="flex justify-between items-center">
             <p className="font-bold">Rp. {transaction.nominal}</p>
-            <p className="italic text-xs">{"Jum'at"}, 21 Desember 2024</p>
+            <p className="italic text-xs">
+              {formatDate(new Date(transaction.created_at as Date))}
+            </p>
           </div>
           <button
             disabled={loadingDelete}
             className="flex justify-center gap-2 bg-red-400 rounded-sm px-2 py-1"
-            onClick={async () => {
-              try {
-                await deleteFunction({
-                  variables: {
-                    id: transaction.id,
-                  },
-                });
-                toast.success("Berhasil Menghapus Data");
-                refetch();
-              } catch (err: any) {
-                toast.error(errorDelete?.message, {
-                  description: JSON.stringify(err, null, 2),
-                });
-              }
+            onClick={() => {
+              toast("Yakin mau hapus Transaksi ini?", {
+                action: (
+                  <button
+                    className="px-2 rounded-sm py-1 text-white bg-red-500 absolute right-2 font-bold"
+                    onClick={async () => {
+                      try {
+                        await deleteFunction({
+                          variables: {
+                            id: transaction.id,
+                          },
+                        });
+                        toast.success("Berhasil Menghapus Data");
+                        refetch();
+                      } catch (err: any) {
+                        toast.error(errorDelete?.message, {
+                          description: JSON.stringify(err, null, 2),
+                        });
+                      }
+                    }}
+                  >
+                    Yakin
+                  </button>
+                ),
+                position: "bottom-right",
+              });
             }}
           >
             <p className="text-white font-bold">Hapus</p>
