@@ -56,20 +56,6 @@ function Page() {
 
         <div className="h-fit w-full rounded-md bg-creme flex flex-col-reverse gap-2 p-3 border border-carcoal text-carcoal">
           <div className="rounded-md text-2xl flex justify-center items-center bg-white font-semibold text-center border border-carcoal">
-            {loadingStatistic
-              ? "loading.."
-              : formatCurrency(
-                  dataStatistic?.statisticTotal.totalStatistic as number
-                )}
-          </div>
-          <div className="flex gap-1 items-center">
-            <Calculator strokeWidth={1} color="#494F55" />
-            <p className="text-xl w-fit">Total Dana</p>
-          </div>
-        </div>
-
-        <div className="h-fit w-full rounded-md bg-creme flex flex-col-reverse gap-2 p-3 border border-carcoal text-carcoal">
-          <div className="rounded-md text-2xl flex justify-center items-center bg-white font-semibold text-center border border-carcoal">
             {loadingKhatib
               ? "loading.."
               : formatCurrency(
@@ -79,6 +65,20 @@ function Page() {
           <div className="flex gap-1 items-center">
             <Calculator strokeWidth={1} color="#494F55" />
             <p className="text-xl w-fit">Total Khatib</p>
+          </div>
+        </div>
+
+        <div className="h-fit w-full rounded-md bg-creme flex flex-col-reverse gap-2 p-3 border border-carcoal text-carcoal">
+          <div className="rounded-md text-2xl flex justify-center items-center bg-white font-semibold text-center border border-carcoal">
+            {loadingStatistic
+              ? "loading.."
+              : formatCurrency(
+                  dataStatistic?.statisticTotal.totalStatistic as number
+                )}
+          </div>
+          <div className="flex gap-1 items-center">
+            <Calculator strokeWidth={1} color="#494F55" />
+            <p className="text-xl w-fit">Total Dana</p>
           </div>
         </div>
 
