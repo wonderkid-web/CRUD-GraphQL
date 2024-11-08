@@ -1,7 +1,15 @@
 // Next.js Custom Route Handler: https://nextjs.org/docs/app/building-your-application/routing/router-handlers
 import { transactionCollection } from "@/libs/firebase";
 import { FormTransaksiType } from "@/types";
-import { addDoc, deleteDoc, doc, getDoc, getDocs } from "firebase/firestore";
+import {
+  addDoc,
+  deleteDoc,
+  doc,
+  getDoc,
+  getDocs,
+  query,
+  where,
+} from "firebase/firestore";
 import { createSchema, createYoga } from "graphql-yoga";
 
 type User = {
@@ -42,7 +50,6 @@ const { handleRequest }: { handleRequest: any } = createYoga({
         seconds: Int!
       }
 
-
       type User {
         name: String!
         age: Int!
@@ -62,6 +69,22 @@ const { handleRequest }: { handleRequest: any } = createYoga({
         description: String!
       }
 
+      type StatisticKhatib {
+        totalKhatib: Int
+      }
+
+      type StatisticInfaq {
+        totalInfaq: Int
+      }
+
+      type StatisticNazir {
+        totalNazir: Int
+      }
+
+      type StatisticTotal {
+        totalStatistic: Int
+      }
+
       input DataTransaction {
         keterangan: String!
         nominal: String!
@@ -76,8 +99,11 @@ const { handleRequest }: { handleRequest: any } = createYoga({
         user(age: Int!): User
         transactions: [Transaction]
         transaction(id: String!): Transaction
+        statisticKhatib: StatisticKhatib
+        statisticInfaq: StatisticInfaq
+        statisticNazir: StatisticNazir
+        statisticTotal: StatisticTotal
       }
-
 
       type Mutation {
         deleteTransaction(id: String!): ResponseDelete
@@ -100,6 +126,89 @@ const { handleRequest }: { handleRequest: any } = createYoga({
           const transaction = await getDoc(docRef);
 
           return transaction;
+        },
+
+        statisticTotal: async () => {
+          const khatibData: FormTransaksiType[] = (
+            await getDocs(transactionCollection)
+          ).docs.map((d) => ({ ...d.data(), id: d.id } as FormTransaksiType));
+
+          const totalStatistic = khatibData.reduce(
+            (acc, curr: FormTransaksiType) => {
+              const nominalStr = curr.nominal.toString();
+              const nominal = +nominalStr.replace(/\./g, "");
+              return acc + nominal;
+            },
+            0
+          );
+
+          return { totalStatistic };
+        },
+
+        statisticKhatib: async () => {
+          const qKhatib = query(
+            transactionCollection,
+            where("type", "==", "KHATIB")
+          );
+
+          const khatibData: FormTransaksiType[] = (
+            await getDocs(qKhatib)
+          ).docs.map((d) => ({ ...d.data(), id: d.id } as FormTransaksiType));
+
+          const totalKhatib = khatibData.reduce(
+            (acc, curr: FormTransaksiType) => {
+              const nominalStr = curr.nominal.toString();
+              const nominal = +nominalStr.replace(/\./g, "");
+              return acc + nominal;
+            },
+            0
+          );
+
+          return { totalKhatib };
+        },
+
+        statisticNazir: async () => {
+          const qNazir = query(
+            transactionCollection,
+            where("type", "==", "NAZIR")
+          );
+
+          const nazirData: FormTransaksiType[] = (
+            await getDocs(qNazir)
+          ).docs.map((d) => ({ ...d.data(), id: d.id } as FormTransaksiType));
+
+          const totalNazir = nazirData.reduce(
+            (acc, curr: FormTransaksiType) => {
+              const nominalStr = curr.nominal.toString();
+              const nominal = +nominalStr.replace(/\./g, "");
+              return acc + nominal;
+            },
+            0
+          );
+
+          return { totalNazir };
+        },
+
+        statisticInfaq: async () => {
+          const qInfaq = query(
+            transactionCollection,
+            where("type", "==", "INFAQ")
+          );
+
+          const infaqData: FormTransaksiType[] = (
+            await getDocs(qInfaq)
+          ).docs.map((d) => ({ ...d.data(), id: d.id } as FormTransaksiType));
+
+          const totalInfaq = infaqData.reduce(
+            (acc, curr: FormTransaksiType) => {
+              const nominalStr = curr.nominal.toString();
+              const nominal = +nominalStr.replace(/\./g, "");
+              return acc + nominal;
+            },
+            0
+          );
+
+          return { totalInfaq };
         },
       },
       Mutation: {
@@ -126,7 +235,7 @@ const { handleRequest }: { handleRequest: any } = createYoga({
             return {
               ...form,
               id: newDoc.id,
-              error: ""
+              error: "",
             };
           } catch (error) {
             return {
@@ -135,7 +244,11 @@ const { handleRequest }: { handleRequest: any } = createYoga({
               type: "unknown", // bisa diisi nilai default atau null
               created_at: "",
               id: "", // bisa diisi nilai default atau null
-              error: `Gagal Menambahkan Transaksi: ${JSON.stringify(error, null, 2)}`, // field tambahan untuk info error
+              error: `Gagal Menambahkan Transaksi: ${JSON.stringify(
+                error,
+                null,
+                2
+              )}`, // field tambahan untuk info error
             };
           }
         },

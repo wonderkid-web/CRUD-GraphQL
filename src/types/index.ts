@@ -18,3 +18,19 @@ export interface FormTransaksiType {
 export type TransactionsGraphType = {
   transactions: FormTransaksiType[];
 };
+
+
+export type StatisticType = {
+  statisticInfaq:{
+    totalInfaq: number
+  }
+  statisticNazir:{
+    totalNazir: number
+  }
+  statisticKhatib:{
+    totalKhatib: number
+  }
+  statisticTotal:{
+    totalStatistic: number
+  }
+}
