@@ -1,7 +1,7 @@
 // Next.js Custom Route Handler: https://nextjs.org/docs/app/building-your-application/routing/router-handlers
 import { transactionCollection } from "@/libs/firebase";
 import { FormTransaksiType } from "@/types";
-import { deleteDoc, doc, getDoc, getDocs } from "firebase/firestore";
+import { addDoc, deleteDoc, doc, getDoc, getDocs } from "firebase/firestore";
 import { createSchema, createYoga } from "graphql-yoga";
 
 type User = {
@@ -33,9 +33,8 @@ const { handleRequest }: { handleRequest: any } = createYoga({
     typeDefs: /* GraphQL */ `
       enum TipeTransaksiType {
         INFAQ
-        JUMAT
+        KHATIB
         NAZIR
-        DANA_MASUK
       }
 
       type FirebaseTimeType {
@@ -50,15 +49,25 @@ const { handleRequest }: { handleRequest: any } = createYoga({
 
       type Transaction {
         keterangan: String!
-        nominal: Int!
+        nominal: String!
         type: TipeTransaksiType!
-        created_at: FirebaseTimeType!
+        created_at: String!
         id: String!
+        error: String
       }
 
       type ResponseDelete {
         success: Boolean!
         description: String!
+      }
+
+      input DataTransaction {
+        keterangan: String!
+        nominal: String!
+        type: TipeTransaksiType!
+        created_at: String
+        id: String
+        error: String
       }
 
       type Query {
@@ -68,8 +77,10 @@ const { handleRequest }: { handleRequest: any } = createYoga({
         transaction(id: String!): Transaction
       }
 
+
       type Mutation {
         deleteTransaction(id: String!): ResponseDelete
+        createTransaction(form: DataTransaction): Transaction
       }
     `,
 
@@ -104,6 +115,26 @@ const { handleRequest }: { handleRequest: any } = createYoga({
             return {
               success: false,
               description: `Dokumen gagal dihapus: ${error}`,
+            };
+          }
+        },
+        createTransaction: async (_, { form }) => {
+          try {
+            const newDoc = await addDoc(transactionCollection, form);
+
+            return {
+              ...form,
+              id: newDoc.id,
+              error: ""
+            };
+          } catch (error) {
+            return {
+              keterangan: "", // field default atau placeholder
+              nominal: 0, // field default atau placeholder
+              type: "unknown", // bisa diisi nilai default atau null
+              created_at: "",
+              id: "", // bisa diisi nilai default atau null
+              error: `Gagal Menambahkan Transaksi: ${JSON.stringify(error, null, 2)}`, // field tambahan untuk info error
             };
           }
         },

@@ -9,10 +9,7 @@ export const GET_TRANSACTIONS : TypedDocumentNode<TransactionsGraphType> = gql`
             keterangan
             nominal
             type
-            created_at{
-                seconds
-                nanoseconds
-            }
+            created_at
             id
         }
     }
@@ -23,6 +20,19 @@ export const DELETE_TRANSACTION = gql`
         deleteTransaction(id: $id){
             success
             description
+        }
+    }
+`
+
+export const CREATE_TRANSACTION = gql`
+    mutation CreateTransaction($form: DataTransaction!){
+        createTransaction(form: $form){
+            id
+            keterangan
+            nominal 
+            type
+            created_at
+            error
         }
     }
 `

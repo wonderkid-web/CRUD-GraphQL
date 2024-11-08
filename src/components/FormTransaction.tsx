@@ -26,6 +26,9 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { toast } from "sonner";
 import { ArrowDownToDot } from "lucide-react";
+import { useMutation } from "@apollo/client";
+import { CREATE_TRANSACTION } from "@/graphql";
+import { useRouter } from "next/navigation";
 
 const FormSchema = z.object({
   keterangan: z.string().min(5, {
@@ -34,39 +37,53 @@ const FormSchema = z.object({
   nominal: z.string({
     message: "Minimal Pengeluaran Rp.500",
   }),
-  type: z.enum(["KHATIB", "INFAQ", "NAZIR", "DANA_MASUK"], {
+  type: z.enum(["KHATIB", "INFAQ", "NAZIR"], {
     message: "Wajib memilih jenis Transaksi",
   }),
 });
 
 function FormTransaction() {
+  const [createTransaction, { loading, error: errorTransaction }] =
+    useMutation(CREATE_TRANSACTION);
+
+  const router = useRouter();
+
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
       keterangan: "",
       nominal: "",
-      type: "DANA_MASUK",
+      type: "INFAQ",
     },
   });
 
   const onSubmit = async (values: z.infer<typeof FormSchema>) => {
-    const sleep = async (time: number) =>
-      new Promise((res) => setTimeout(res, time));
-
     const created_at = new Date();
 
     const toastId = toast.loading("Memproses Transaksi");
 
-    await sleep(800);
+    try {
+      await createTransaction({
+        variables: {
+          form: {
+            ...values,
+            created_at,
+          },
+        },
+      });
 
-    toast.dismiss(toastId);
+      toast.dismiss(toastId);
 
-    toast.success("Berhasil Melakukan Transaksi");
-    console.log({
-      ...values,
-      created_at,
-      nominal: values.nominal.replace(".", ""),
-    });
+      toast.success("Berhasil Melakukan Transaksi");
+
+      router.push("/");
+    } catch (error: any) {
+      toast.warning("Gagal Menambah Transaksi");
+      toast.warning(errorTransaction?.message);
+      console.log(error);
+    } finally {
+      toast.dismiss(toastId);
+    }
   };
 
   return (
@@ -104,7 +121,10 @@ function FormTransaction() {
                     placeholder="Nominal Transaksi"
                     {...field}
                     onChange={(e) => {
-                      const  currValue = e.currentTarget.value.replace(/\D/g, ""); // Remove non-numeric characters
+                      const currValue = e.currentTarget.value.replace(
+                        /\D/g,
+                        ""
+                      ); // Remove non-numeric characters
                       let formattedValue = "";
 
                       for (let i = 0; i < currValue.length; i++) {
@@ -154,8 +174,8 @@ function FormTransaction() {
                       value={field.value}
                       onValueChange={field.onChange}
                     >
-                      <DropdownMenuRadioItem value="dana_masuk">
-                        Dana Masuk
+                      <DropdownMenuRadioItem value="INFAQ">
+                        Transaksi Infaq
                       </DropdownMenuRadioItem>
                     </DropdownMenuRadioGroup>
                     <DropdownMenuLabel>Transaksi Keluar</DropdownMenuLabel>
@@ -164,13 +184,10 @@ function FormTransaction() {
                       value={field.value}
                       onValueChange={field.onChange}
                     >
-                      <DropdownMenuRadioItem value="infaq">
-                        Transaksi Infaq
-                      </DropdownMenuRadioItem>
-                      <DropdownMenuRadioItem value="jumat">
+                      <DropdownMenuRadioItem value="KHATIB">
                         Transaksi Khatib
                       </DropdownMenuRadioItem>
-                      <DropdownMenuRadioItem value="nazir">
+                      <DropdownMenuRadioItem value="NAZIR">
                         Transaksi Nazir
                       </DropdownMenuRadioItem>
                     </DropdownMenuRadioGroup>
@@ -183,7 +200,7 @@ function FormTransaction() {
           )}
         />
 
-        <Button className="bg-[#2E8B57] mt-2" type="submit">
+        <Button disabled={loading} className="bg-[#2E8B57] mt-2" type="submit">
           Submit
         </Button>
       </form>
