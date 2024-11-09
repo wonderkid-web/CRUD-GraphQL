@@ -1,6 +1,8 @@
 // Next.js Custom Route Handler: https://nextjs.org/docs/app/building-your-application/routing/router-handlers
+import { formatDate } from "@/helper";
 import { transactionCollection } from "@/libs/firebase";
 import { FormTransaksiType } from "@/types";
+import { compareAsc } from "date-fns";
 import {
   addDoc,
   deleteDoc,
@@ -55,6 +57,11 @@ const { handleRequest }: { handleRequest: any } = createYoga({
         age: Int!
       }
 
+      type KhatibTime {
+        oldest: String
+        newest: String
+      }
+
       type Transaction {
         keterangan: String!
         nominal: String!
@@ -82,7 +89,9 @@ const { handleRequest }: { handleRequest: any } = createYoga({
       }
 
       type StatisticTotal {
-        totalStatistic: Int
+        transaksiMasuk: Int
+        transaksiKeluar: Int
+        totalKas: Int
       }
 
       input DataTransaction {
@@ -103,6 +112,7 @@ const { handleRequest }: { handleRequest: any } = createYoga({
         statisticInfaq: StatisticInfaq
         statisticNazir: StatisticNazir
         statisticTotal: StatisticTotal
+        khatibTime: KhatibTime
       }
 
       type Mutation {
@@ -133,7 +143,7 @@ const { handleRequest }: { handleRequest: any } = createYoga({
             await getDocs(transactionCollection)
           ).docs.map((d) => ({ ...d.data(), id: d.id } as FormTransaksiType));
 
-          const totalStatistic = khatibData.reduce(
+          const transaksiMasuk = khatibData.filter(d=> d.type == "INFAQ").reduce(
             (acc, curr: FormTransaksiType) => {
               const nominalStr = curr.nominal.toString();
               const nominal = +nominalStr.replace(/\./g, "");
@@ -142,7 +152,21 @@ const { handleRequest }: { handleRequest: any } = createYoga({
             0
           );
 
-          return { totalStatistic };
+          const transaksiKeluar = khatibData.filter(d=> d.type != "INFAQ").reduce(
+            (acc, curr: FormTransaksiType) => {
+              const nominalStr = curr.nominal.toString();
+              const nominal = +nominalStr.replace(/\./g, "");
+              return acc + nominal;
+            },
+            0
+          );
+
+
+          return { 
+            transaksiMasuk,
+            transaksiKeluar,
+            totalKas: (transaksiMasuk - transaksiKeluar)
+           };
         },
 
         statisticKhatib: async () => {
@@ -209,6 +233,24 @@ const { handleRequest }: { handleRequest: any } = createYoga({
           );
 
           return { totalInfaq };
+        },
+        khatibTime: async () => {
+          const qKhatib = query(
+            transactionCollection,
+            where("type", "==", "KHATIB")
+          );
+
+          const khatibTime: Date[] = (await getDocs(qKhatib)).docs.map(
+            (d) => new Date(d.data().created_at)
+          );
+
+          const filter = khatibTime.sort(compareAsc);
+
+
+          return {
+            oldest: formatDate(filter[0]),
+            newest: formatDate(filter[filter.length - 1]),
+          };
         },
       },
       Mutation: {

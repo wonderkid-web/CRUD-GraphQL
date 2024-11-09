@@ -15,8 +15,10 @@ function Transaction() {
   const { data, loading, error, refetch } = useQuery(GET_TRANSACTIONS, {
     fetchPolicy: "cache-and-network",
   });
+
   const [deleteFunction, { loading: loadingDelete, error: errorDelete }] =
     useMutation(DELETE_TRANSACTION);
+    
 
   const [parent] = useAutoAnimate();
 

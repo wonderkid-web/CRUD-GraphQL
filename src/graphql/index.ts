@@ -59,7 +59,17 @@ export const GET_STATISTIC_INFAQ = gql`
 export const GET_STATISTIC_TOTAL = gql`
   query GetStatisticTotal {
     statisticTotal {
-      totalStatistic
+      transaksiMasuk
+      transaksiKeluar
+      totalKas
     }
   }
 `;
+export const GET_KHATIB_TIME = gql`
+  query GetKhatibTime{
+    khatibTime{
+      oldest
+      newest
+    }
+  }
+`

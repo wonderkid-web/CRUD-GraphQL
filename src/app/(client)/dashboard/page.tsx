@@ -8,6 +8,7 @@ import {
   GET_STATISTIC_KHATIB,
   GET_STATISTIC_INFAQ,
   GET_STATISTIC_TOTAL,
+  GET_KHATIB_TIME,
 } from "@/graphql";
 import { StatisticType } from "@/types";
 import { formatCurrency } from "@/helper";
@@ -21,26 +22,17 @@ function Page() {
     useQuery<StatisticType>(GET_STATISTIC_KHATIB);
   const { data: dataStatistic, loading: loadingStatistic } =
     useQuery<StatisticType>(GET_STATISTIC_TOTAL);
+  const { data: khatibTime, loading: loadingKhatibTime } =
+    useQuery<StatisticType>(GET_KHATIB_TIME);
 
   return (
     <MainContainer>
       <HeaderContainer pageName="Dashboard" />
       <section className="grid grid-cols-1 sm:grid-cols-2 justify-items-center gap-4">
+        
         {/* {DashboardData.map((card) => (
           <DashboardCard key={card.information} {...card} />
         ))} */}
-
-        <div className="h-fit w-full rounded-md bg-creme flex flex-col-reverse gap-2 p-3 border border-carcoal text-carcoal">
-          <div className="rounded-md text-2xl flex justify-center items-center bg-white font-semibold text-center border border-carcoal">
-            {loadingNazir
-              ? "loading.."
-              : formatCurrency(dataNazir?.statisticNazir.totalNazir as number)}
-          </div>
-          <div className="flex gap-1 items-center">
-            <Calculator strokeWidth={1} color="#494F55" />
-            <p className="text-xl w-fit">Total Nazir</p>
-          </div>
-        </div>
 
         <div className="h-fit w-full rounded-md bg-creme flex flex-col-reverse gap-2 p-3 border border-carcoal text-carcoal">
           <div className="rounded-md text-2xl flex justify-center items-center bg-white font-semibold text-center border border-carcoal">
@@ -73,12 +65,72 @@ function Page() {
             {loadingStatistic
               ? "loading.."
               : formatCurrency(
-                  dataStatistic?.statisticTotal.totalStatistic as number
+                  dataStatistic?.statisticTotal.transaksiMasuk as number
                 )}
           </div>
           <div className="flex gap-1 items-center">
             <Calculator strokeWidth={1} color="#494F55" />
-            <p className="text-xl w-fit">Total Dana</p>
+            <p className="text-xl w-fit">Total Dana Masuk</p>
+          </div>
+        </div>
+
+        <div className="h-fit w-full rounded-md bg-creme flex flex-col-reverse gap-2 p-3 border border-carcoal text-carcoal">
+          <div className="rounded-md text-2xl flex justify-center items-center bg-white font-semibold text-center border border-carcoal">
+            {loadingStatistic
+              ? "loading.."
+              : formatCurrency(
+                  dataStatistic?.statisticTotal.transaksiKeluar as number
+                )}
+          </div>
+          <div className="flex gap-1 items-center">
+            <Calculator strokeWidth={1} color="#494F55" />
+            <p className="text-xl w-fit">Total Dana Keluar</p>
+          </div>
+        </div>
+
+        <div className="h-fit w-full rounded-md bg-creme flex flex-col-reverse gap-2 p-3 border border-carcoal text-carcoal">
+          <div className="rounded-md text-2xl flex justify-center items-center bg-white font-semibold text-center border border-carcoal">
+            {loadingStatistic
+              ? "loading.."
+              : formatCurrency(
+                  dataStatistic?.statisticTotal.totalKas as number
+                )}
+          </div>
+          <div className="flex gap-1 items-center">
+            <Calculator strokeWidth={1} color="#494F55" />
+            <p className="text-xl w-fit">Kas Tersedia</p>
+          </div>
+        </div>
+
+        <div className="h-fit w-full rounded-md bg-creme flex flex-col-reverse gap-2 p-3 border border-carcoal text-carcoal">
+          <div className="rounded-md text-2xl flex justify-center items-center bg-white font-semibold text-center border border-carcoal">
+            {loadingNazir
+              ? "loading.."
+              : formatCurrency(dataNazir?.statisticNazir.totalNazir as number)}
+          </div>
+          <div className="flex gap-1 items-center">
+            <Calculator strokeWidth={1} color="#494F55" />
+            <p className="text-xl w-fit">Total Nazir</p>
+          </div>
+        </div>
+
+        <div className="h-fit w-full rounded-md bg-creme flex flex-col-reverse gap-2 p-3 border border-carcoal text-carcoal">
+          <div className="rounded-md text-lg flex justify-center items-center bg-white font-semibold text-center border border-carcoal">
+            {loadingKhatibTime ? "loading.." : khatibTime?.khatibTime.oldest}
+          </div>
+          <div className="flex gap-1 items-center">
+            <Calculator strokeWidth={1} color="#494F55" />
+            <p className="text-md w-fit">Transaksi Nazir Terlama</p>
+          </div>
+        </div>
+
+        <div className="h-fit w-full rounded-md bg-creme flex flex-col-reverse gap-2 p-3 border border-carcoal text-carcoal">
+          <div className="rounded-md text-lg flex justify-center items-center bg-white font-semibold text-center border border-carcoal">
+            {loadingKhatibTime ? "loading.." : khatibTime?.khatibTime.newest}
+          </div>
+          <div className="flex gap-1 items-center">
+            <Calculator strokeWidth={1} color="#494F55" />
+            <p className="text-md w-fit">Transaksi Nazir Terbaru</p>
           </div>
         </div>
 
